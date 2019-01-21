@@ -1,4 +1,4 @@
-# s3_cert plugin
+# s3_code_sign plugin
 
 [![fastlane Plugin Badge](https://rawcdn.githack.com/fastlane/fastlane/master/fastlane/assets/plugin-badge.svg)](https://rubygems.org/gems/fastlane-plugin-s3_cert)
 
@@ -10,7 +10,7 @@ This project is a [_fastlane_](https://github.com/fastlane/fastlane) plugin. To 
 fastlane add_plugin s3_cert
 ```
 
-## About s3_cert
+## About s3_code_sign
 
 Store and install encrypted Certs from s3
 
