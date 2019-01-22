@@ -11,7 +11,7 @@ Gem::Specification.new do |spec|
   spec.email         = 'josh.r.lesch@gmail.com'
 
   spec.summary       = 'Store and install encrypted Certs from s3'
-  # spec.homepage      = "https://github.com/<GITHUB_USERNAME>/fastlane-plugin-s3_cert"
+  spec.homepage      = "https://github.com/joshrlesch/fastlane-plugin-s3_cert"
   spec.license       = "MIT"
 
   spec.files         = Dir["lib/**/*"] + %w(README.md LICENSE)
