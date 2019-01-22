@@ -73,10 +73,17 @@ module Fastlane
                 UI.important("Unable to find cert: #{r} in the Dev Portal, skipping install..")
                 next
               end
-
+              
               if FastlaneCore::CertChecker.installed?(File.join(dir, File.basename(r)), in_keychain: params[:keychain_name])
                 UI.important("Certificate '#{File.join(dir, File.basename(r))}' is already installed on this machine")
               else
+                if params[:delete_expired_cert]
+                  UI.message("Checking to see if its expired..")
+                  expired_cert = self.check_for_expired_cert(File.join(dir, File.basename(r)), params[:keychain_name])
+                  if expired_cert
+                    self.delete_cert(expired_cert)
+                  end
+                end
                 keychain_path = FastlaneCore::Helper.keychain_path(params[:keychain_name])
                 FastlaneCore::KeychainImporter.import_file(File.join(dir, File.basename(r)), 
                                                           keychain_path, 
@@ -88,6 +95,25 @@ module Fastlane
             end
           end
         }
+      end
+
+      def self.check_for_expired_cert(path, keychain)
+        cert_name = OpenSSL::X509::Certificate.new(File.read(path)).subject.to_s.match(/CN=(.*?)\//)[1]
+        installed_certs = sh("security find-identity -p codesigning #{keychain}")
+        installed_certs.split("\n").each do |c|
+          if c.include?("CSSMERR_TP_CERT_EXPIRED")
+            expired_cert_name = c.match(/\"(.*)\"/)[1]
+            if expired_cert_name == cert_name
+              UI.important("#{cert_name} is expired")
+              return expired_cert_name
+            end
+          end
+        end
+      end
+
+      def self.delete_cert(cert_name)
+        UI.important("Deleting cert #{cert_name}")
+        sh("security delete-certificate -c '#{cert_name}'")
       end
 
       def self.description
@@ -159,7 +185,14 @@ module Fastlane
                                        description: "Name of keychain where certs will be installeds",
                                        default_value: "login.keychain",
                                        optional: true,
-                                       type: String)
+                                       type: String),
+          FastlaneCore::ConfigItem.new(key: :delete_expired_cert,
+                                       description: "Option to delete existing cert if expired",
+                                       default_value: "login.keychain",
+                                       optional: true,
+                                       default_value: false,
+                                       is_string: false)
+
         ]
       end
 
