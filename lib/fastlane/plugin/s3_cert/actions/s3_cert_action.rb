@@ -59,7 +59,7 @@ module Fastlane
               # Would really like to make this call once
               Spaceship.certificate.all.find do |cert|
                 if cert.owner_id == uid
-                  UI.success("Found the cert in Dev Portal")
+                  UI.success("Found the cert #{r} in the Apple Developer Portal.")
                   now = Time.now
                   if parsed_cert.not_after - now < 0
                     UI.important("The cert: #{r} with UID: #{uid} is expired and wont be installed. Create a new one and upload it to s3")
@@ -70,7 +70,7 @@ module Fastlane
               end
 
               unless found
-                UI.important("Unable to find cert: #{r} in the Dev Portal, skipping install..")
+                UI.important("Unable to find cert: #{r} in the Apple Developer Portal, skipping install..")
                 next
               end
               
@@ -82,6 +82,8 @@ module Fastlane
                   expired_cert = self.check_for_expired_cert(File.join(dir, File.basename(r)), params[:keychain_name])
                   if expired_cert
                     self.delete_cert(expired_cert)
+                  else
+                    UI.message("Certificate is valid!")
                   end
                 end
                 keychain_path = FastlaneCore::Helper.keychain_path(params[:keychain_name])
@@ -106,6 +108,8 @@ module Fastlane
             if expired_cert_name == cert_name
               UI.important("#{cert_name} is expired")
               return expired_cert_name
+            else
+              return nil
             end
           end
         end
@@ -188,7 +192,6 @@ module Fastlane
                                        type: String),
           FastlaneCore::ConfigItem.new(key: :delete_expired_cert,
                                        description: "Option to delete existing cert if expired",
-                                       default_value: "login.keychain",
                                        optional: true,
                                        default_value: false,
                                        is_string: false)
