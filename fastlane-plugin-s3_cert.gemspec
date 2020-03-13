@@ -22,7 +22,7 @@ Gem::Specification.new do |spec|
   # since this would cause a circular dependency
 
   # spec.add_dependency 'your-dependency', '~> 1.0.0'
-  spec.add_dependency('aws-sdk-s3', '~> 1')
+  spec.add_dependency('aws-sdk-s3')
   spec.add_dependency('utils', '~> 0.2.4')
   spec.add_dependency('commander-fastlane', '>= 4.4.6', '< 5.0.0')
 
